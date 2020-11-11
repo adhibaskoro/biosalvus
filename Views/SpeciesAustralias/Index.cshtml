@@ -1,0 +1,102 @@
+﻿@model IEnumerable<Biosalvus.Models.SpeciesAustralia>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+<div id="species-map" style="height:450px;"></div> <!--This is the Map-->
+<div class="row">
+    <div class="col-md-2">
+        <button style="width: 100%;height: 70px;">
+            Vulnerable
+            <p class="vulnerablecount">100</p>
+        </button>
+    </div>
+    <div class="col-md-2">
+        <button style="width: 100%;height: 70px;">
+            Conservation Dependent
+            <p class="conservationcount">100</p>
+        </button>
+    </div>
+    <div class="col-md-2">
+        <button style="width: 100%;height: 70px;">
+            Endangered
+            <p class="endangeredcount">100</p>
+        </button>
+    </div>
+    <div class="col-md-2">
+        <button style="width: 100%;height: 70px;">
+            Critically Endangered
+            <p class="critendangeredcount">100</p>
+        </button>
+    </div>
+    <div class="col-md-2">
+        <button style="width: 100%;height: 70px;">
+            Extinct in the wild
+            <p class="wildextinctcount">100</p>
+        </button>
+    </div>
+    <div class="col-md-2">
+        <button style="width: 100%;height: 70px;">
+            Extinct
+            <p class="extinctcount">100</p>
+        </button>
+    </div>
+</div>
+<table class="table" style="display:none">
+    @foreach (var item in Model)
+    {
+        <tr class="species">
+            <td class="speciessciname">
+                @Html.DisplayFor(modelItem => item.Scientific_Name)
+            </td>
+            <td class="speciesname">
+                @Html.DisplayFor(modelItem => item.Common_Name)
+            </td>
+            <td class="speciesstatus">
+                @Html.DisplayFor(modelItem => item.Threatened_status)
+            </td>
+            <td class="specieskingdom">
+                @Html.DisplayFor(modelItem => item.Kingdom)
+            </td>
+            <td class="speciesphylum">
+                @Html.DisplayFor(modelItem => item.Phylum)
+            </td>
+            <td class="speciesclass">
+                @Html.DisplayFor(modelItem => item.Class)
+            </td>
+            <td class="speciesfamily">
+                @Html.DisplayFor(modelItem => item.Family)
+            </td>
+            <td class="speciesgenus">
+                @Html.DisplayFor(modelItem => item.Genus)
+            </td>
+            <td class="speciesspecies">
+                @Html.DisplayFor(modelItem => item.Species)
+            </td>
+            <td class="speciesgrouping">
+                @Html.DisplayFor(modelItem => item.Grouping)
+            </td>
+            <td class="statecode">
+                @Html.DisplayFor(modelItem => item.StateCode)
+            </td>
+            <td class="speciescountry">
+                @Html.DisplayFor(modelItem => item.Country)
+            </td>
+            <td class="statecountry">
+                @Html.DisplayFor(modelItem => item.StateCountry)
+            </td>
+            <td class="statename">
+                @Html.DisplayFor(modelItem => item.State_Name)
+            </td>
+            <td class="present">
+                @Html.DisplayFor(modelItem => item.Present_)
+            </td>
+        </tr>
+    }
+</table>
+@section Scripts {
+    @Scripts.Render("~/bundles/speciesmap")
+}

@@ -1,0 +1,443 @@
+﻿@model Biosalvus.Models.SpeciesAllViewModel
+
+@{
+    ViewBag.Title = "Explore Australia";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .legend {
+        height: 150px;
+        background-color: #fff;
+        border-radius: 3px;
+        bottom: 30px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        padding: 10px;
+        right: 10px;
+        z-index: 1;
+    }
+
+        .legend h4 {
+            margin: 0 0 10px;
+        }
+
+        .legend div span {
+            border-radius: 50%;
+            display: inline-block;
+            height: 10px;
+            margin-right: 5px;
+            width: 10px;
+        }
+
+    .button {
+        border-radius: 4px;
+    }
+
+        .button:hover {
+            background-color: #4c956c;
+            color: white;
+        }
+
+    table td {
+        border-bottom: 1px solid #000;
+        font-size: 11px;
+        text-align: center;
+    }
+</style>
+<div style="background-color:#124720;padding-left:15px;padding-right:15px;">
+    <header>
+        <div style="padding:3rem 5.25rem;background-image:url(../Content/Images/forest-banner.jpg);height:auto;width:auto;background-position-x:center;background-repeat:no-repeat;background-size:cover;">
+            <div class="line">
+                <h1 class="text-white margin-top-bottom-10 text-size-60 text-line-height-1">@ViewBag.Title</h1>
+                <p class="margin-bottom-0 text-size-16" style="color:white;">
+                    Explore our Dashboard to view the most current status of threatened Australian Wildlife.<br>
+                    Below represent Australia's 5 States and 2 Territories to select from.<br>
+                    You can start by selecting either the State on the Map or Threatened Status.<br>
+                    Bar Chart can be selected to further explore each animal groupings.
+                </p>
+            </div>
+        </div>
+    </header>
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <div style="margin:10px 1px 10px 1px;padding:5px 5px 5px 20px;background-color:white;">
+                <h4><strong style='font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;'>State: <span id="statefilter"></span></strong></h4>
+            </div>
+        </div>
+        <div class="col-md-3 col-xs-12">
+            <div class="row">
+                <div style="margin:10px 1px 10px 1px;padding:5px 5px 5px 20px;background-color:white;">
+                    <h4><strong style='font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;'>Status: <span id="statusfilter"></span></strong></h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-xs-12">
+            <div style="margin:10px 1px 10px 1px;padding:5px 5px 5px 20px;background-color:white;">
+                <h4><strong style='font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;'>Grouping: <span id="groupfilter"></span></strong></h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <div style="margin:1px 1px 1px 1px;padding:15px 15px 15px 15px;background-color:white;height:700px;">
+                <div class="row">
+                    <div class="col-md-6 col-xs-6"><strong>Map</strong></div>
+                    <div class="col-md-6 col-xs-6">
+                        <!--CLEAR ALL BUTTON-->
+                        <button class="button" id="refreshbtn" style="width:100%;height:100%;color:white;background-color:#2c6e49;text-align:center;">
+                            Clear Selection
+                        </button>
+                    </div>
+                </div>
+                <br />
+                <div id="species-map" style="height:500px;"></div> <!--This is the Map-->
+                <br />
+                <div class="row" style="margin-left:0px;margin-right:0px;">
+                    <div class="col-md-4 col-xs-12"><strong>State Count:</strong></div>
+                    <div class="col-md-1 col-xs-12" style="text-align:center;padding:0px 0px 0px 0px;"><p id="rank1" style="font-size:large;background-color:rgba(88,0,0,0.8);color:white;">QLD<br /> 176</p></div>
+                    <div class="col-md-1 col-xs-12" style="text-align:center;padding:0px 0px 0px 0px;"><p id="rank2" style="font-size:large;background-color:rgba(128,0,0,0.8);color:white;">NSW<br /> 170</p></div>
+                    <div class="col-md-1 col-xs-12" style="text-align:center;padding:0px 0px 0px 0px;"><p id="rank3" style="font-size:large;background-color:rgba(192,0,0,0.8);color:white;">WA<br /> 151</p></div>
+                    <div class="col-md-1 col-xs-12" style="text-align:center;padding:0px 0px 0px 0px;"><p id="rank4" style="font-size:large;background-color:rgba(250,0,0,0.8);color:white;">SA<br /> 127</p></div>
+                    <div class="col-md-1 col-xs-12" style="text-align:center;padding:0px 0px 0px 0px;"><p id="rank5" style="font-size:large;background-color:rgba(248,96,2,0.8);color:white;">VIC<br /> 120</p></div>
+                    <div class="col-md-1 col-xs-12" style="text-align:center;padding:0px 0px 0px 0px;"><p id="rank6" style="font-size:large;background-color:rgba(250,137,0,0.8);color:white;">TAS<br /> 106</p></div>
+                    <div class="col-md-1 col-xs-12" style="text-align:center;padding:0px 0px 0px 0px;"><p id="rank7" style="font-size:large;background-color:rgba(250,170,26,0.8);color:white;">NT<br /> 84</p></div>
+                    <div class="col-md-1 col-xs-12" style="text-align:center;padding:0px 0px 0px 0px;"><p id="rank8" style="font-size:large;background-color:rgba(248,195,2,0.8);color:white;">ACT<br /> 28</p></div>
+                    <div class="col-md-12 col-xs-12"><strong>Note: </strong>Statewise counts based on current threatened status selection only.</div>
+                </div>
+            </div>
+        </div>
+        <!--COL 2-->
+        <div class="col-md-3 col-xs-12">
+            <div class="row">
+                <div style="margin-bottom:5px;padding:15px 15px 15px 15px;background-color:white;height:250px;">
+                    <div class="col-md-6 col-xs-6" style="text-align:center;"><strong>Threatened Status</strong></div>
+                    <div class="col-md-6 col-xs-6" style="text-align:center;"><strong>Count</strong></div>
+                    <div class="col-md-6 col-xs-6" style="text-align:center;">
+                        <button class="button" id="vulnerablebutton" style="font-size:small;width:100%;height:45px;color:white;background-color:#2c6e49;">
+                            Vulnerable
+                        </button>
+                    </div>
+                    <div class="col-md-6 col-xs-6"><p id="vulnerablecnt" style="text-align:center;font-size:x-large;height:45px;">486</p></div>
+                    <div class="col-md-6 col-xs-6" style="text-align:center;">
+                        <button class="button" id="conservationbutton" style="font-size:small;width:100%;height:45px;color:white;background-color:#2c6e49;">
+                            Conservation Dependent
+                        </button>
+                    </div>
+                    <div class="col-md-6 col-xs-6"><p id="conservationcnt" style="text-align:center;font-size:x-large;height:45px;">28</p></div>
+                    <div class="col-md-6 col-xs-6" style="text-align:center;">
+                        <button class="button" id="endangeredbutton" style="font-size:small;width:100%;height:45px;color:white;background-color:#2c6e49;">
+                            Endangered
+                        </button>
+                    </div>
+                    <div class="col-md-6 col-xs-6"><p id="endangeredcnt" style="text-align:center;font-size:x-large;height:45px;">312</p></div>
+                    <div class="col-md-6 col-xs-6" style="text-align:center;">
+                        <button class="button" id="critendangeredbutton" style="font-size:small;width:100%;height:45px;color:white;background-color:#2c6e49;">
+                            Critically Endangered
+                        </button>
+                    </div>
+                    <div class="col-md-6 col-xs-6"><p id="critendangeredncnt" style="text-align:center;font-size:x-large;height:45px;">136</p></div>
+                </div>
+                <div id="speciesgroupChart" class="col-md-12 col-xs-12" style="margin-top:5px;padding:15px 15px 15px 15px;background-color:white;height:auto;">
+                    <div>
+                        <strong>Click on Graph for more details</strong>
+                        <canvas id="groupChart" width="280" height="280"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--COL 3-->
+        <div class="col-md-3 col-xs-12">
+            <div style="margin:1px 1px 1px 1px;padding:15px 15px 15px 15px;background-color:white;height:700px;">
+                <div class="row">
+                    <div class="col-md-12 col-xs-12">
+                        <strong>Grouping Details Table</strong>
+                        @*<table id="starttable" class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:25%;">
+                                            Name
+                                        </th>
+                                        <th style="width:25%;">
+                                            Status
+                                        </th>
+                                        <th style="width:25%;">
+                                            State
+                                        </th>
+                                        <th style="width:25%;">
+                                            Group
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>*@
+                    </div>
+                    <div id="speciesgroupTable" class="col-md-12 col-xs-12" style="height:600px;display:block;">
+                        <div id="speciesbygroupings" class="row">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:25%;">
+                                            Name
+                                        </th>
+                                        <th style="width:25%;">
+                                            Status
+                                        </th>
+                                        <th style="width:25%;">
+                                            State
+                                        </th>
+                                        <th style="width:25%;">
+                                            Group
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <div class="col-md-12 col-xs-12" style="overflow:scroll;height:600px;">
+                                <table>
+                                    <tbody>
+                                        @foreach (var item in Model.speciesbygroupings)
+                                        {
+                                            <tr class="speciesbygroupings">
+                                                <td class="speciesname" style="width:25%;">
+                                                    @Html.DisplayFor(modelItem => item.CommonName)
+                                                </td>
+                                                <td class="speciesstatus" style="width:25%;">
+                                                    @Html.DisplayFor(modelItem => item.Status)
+                                                </td>
+                                                <td class="speciesstate" style="width:25%;">
+                                                    @Html.DisplayFor(modelItem => item.StateCode)
+                                                </td>
+                                                <td class="speciesgrouping" style="width:25%;">
+                                                    @Html.DisplayFor(modelItem => item.Grouping)
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="display:none;">
+        <button id="wildextinctbutton" style="width: 100%;height: 100%;color:white;background-color:darkgrey;">
+            Extinct in the wild
+            <span id="wildextinctcnt">1</span>
+        </button>
+    </div>
+    <div style="display:none;">
+        <button id="extinctbutton" style="width: 100%;height: 70px;color:white;background-color:lightgrey;">
+            Extinct
+            <span id="extinctcnt">95</span>
+        </button>
+    </div>
+    <br />
+    <!--DATA SOURCE DESCRIPTION-->
+    <div style="font-size:smaller;color:white;">
+        <strong>Data Source Reference</strong>
+        <ul>
+            <li>
+                Species Data: Atlas of Living Australia  https://www.ala.org.au/
+            </li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="speciescountbygroupings" class="table" style="display:none;">
+                <tr>
+                    <th>
+                        Total Count
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        StateCode
+                    </th>
+                    <th>
+                        Grouping
+                    </th>
+                </tr>
+                @foreach (var item in Model.speciescountbygroupings)
+                {
+                    <tr class="speciescountbygroupings">
+                        <td class="speciestotalcount">
+                            @Html.DisplayFor(modelItem => item.TotalCount)
+                        </td>
+                        <td class="speciescountstatus">
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        <td class="speciescountstate">
+                            @Html.DisplayFor(modelItem => item.StateCode)
+                        </td>
+                        <td class="speciescountgrouping">
+                            @Html.DisplayFor(modelItem => item.Grouping)
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+
+    </div>
+    <!--Grounping Count by State-->
+    <table id="groupingcountbystate" class="table" style="display:none;">
+        @foreach (var item in Model.groupingByStates)
+        {
+            <tr class="groupingcountbystate">
+                <td class="statetotalcount">
+                    @Html.DisplayFor(modelItem => item.TotalCount)
+                </td>
+                <td class="groupingcountstate">
+                    @Html.DisplayFor(modelItem => item.StateCode)
+                </td>
+                <td class="stategroup">
+                    @Html.DisplayFor(modelItem => item.Grouping)
+                </td>
+            </tr>
+        }
+    </table>
+    <!--Grounping Count by Status-->
+    <table id="groupingcountbystatus" class="table" style="display:none;">
+        @foreach (var item in Model.groupingByStatuses)
+        {
+            <tr class="groupingcountbystatus">
+                <td class="statustotalcount">
+                    @Html.DisplayFor(modelItem => item.TotalCount)
+                </td>
+                <td class="groupingcountstatus">
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td class="statusgroup">
+                    @Html.DisplayFor(modelItem => item.Grouping)
+                </td>
+            </tr>
+        }
+    </table>
+
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table" style="display:none">
+                @foreach (var item in Model.speciescountbystatus)
+                {
+                    <tr class="countbystatusrow">
+                        <td class="status">
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        <td class="totalcount">
+                            @Html.DisplayFor(modelItem => item.TotalCount)
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+        <div class="col-md-6">
+            <table class="table" style="display:none">
+                @foreach (var item in Model.speciescountvulnerable)
+                {
+                    <tr class="vulnerablerows">
+                        <td class="statusvulnerable">
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        <td class="statevulnerable">
+                            @Html.DisplayFor(modelItem => item.StateCode)
+                        </td>
+                        <td class="totalcountvulnerable">
+                            @Html.DisplayFor(modelItem => item.TotalCount)
+                        </td>
+                    </tr>
+                }
+                @foreach (var item in Model.speciescountextinctinwild)
+                {
+                    <tr class="extinctinwildrows">
+                        <td class="statusextinctinwild">
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        <td class="stateextinctinwild">
+                            @Html.DisplayFor(modelItem => item.StateCode)
+                        </td>
+                        <td class="totalcountextinctinwild">
+                            @Html.DisplayFor(modelItem => item.TotalCount)
+                        </td>
+                    </tr>
+                }
+                @foreach (var item in Model.speciescountendangered)
+                {
+                    <tr class="endangeredrows">
+                        <td class="statusendangered">
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        <td class="stateendangered">
+                            @Html.DisplayFor(modelItem => item.StateCode)
+                        </td>
+                        <td class="totalcountendangered">
+                            @Html.DisplayFor(modelItem => item.TotalCount)
+                        </td>
+                    </tr>
+                }
+                @foreach (var item in Model.speciescountcritendangered)
+                {
+                    <tr class="critendangeredrows">
+                        <td class="statuscritendangered">
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        <td class="statecritendangered">
+                            @Html.DisplayFor(modelItem => item.StateCode)
+                        </td>
+                        <td class="totalcountcritendangered">
+                            @Html.DisplayFor(modelItem => item.TotalCount)
+                        </td>
+                    </tr>
+                }
+                @foreach (var item in Model.speciescountconservation)
+                {
+                    <tr class="conservationrows">
+                        <td class="statusconservation">
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        <td class="stateconservation">
+                            @Html.DisplayFor(modelItem => item.StateCode)
+                        </td>
+                        <td class="totalcountconservation">
+                            @Html.DisplayFor(modelItem => item.TotalCount)
+                        </td>
+                    </tr>
+                }
+                @foreach (var item in Model.speciescountextinct)
+                {
+                    <tr class="extinctrows">
+                        <td class="statusextinct">
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        <td class="stateextinct">
+                            @Html.DisplayFor(modelItem => item.StateCode)
+                        </td>
+                        <td class="totalcountextinct">
+                            @Html.DisplayFor(modelItem => item.TotalCount)
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+    <table class="table" style="display:none">
+        @foreach (var item in Model.speciescountbystatestatus)
+        {
+            <tr class="countbystatestatusrows">
+                <td class="statusbystatestatus">
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td class="statebystatestatus">
+                    @Html.DisplayFor(modelItem => item.StateCode)
+                </td>
+                <td class="totalcountbystatestatus">
+                    @Html.DisplayFor(modelItem => item.TotalCount)
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/speciesmap")
+}
